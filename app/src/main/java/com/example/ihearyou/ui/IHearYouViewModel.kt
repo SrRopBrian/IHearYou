@@ -17,22 +17,13 @@ class IHearYouViewModel: ViewModel() {
 
     private var screenColor = uiState.value.screenColor
 
-    fun changeScreenColor(): Int {
+    fun changeScreenColor(): Color {
         when (screenColor) {
-            R.string.white -> screenColor = R.string.blue
-            R.string.blue -> screenColor = R.string.red
-            R.string.red -> screenColor = R.string.blue
+            Color.White -> screenColor = Color.Blue
+            Color.Blue -> screenColor = Color.Red
+            Color.Red -> screenColor = Color.Blue
         }
 
         return screenColor
     }
-
-    fun getColor(context: Context): Color {
-        return when (screenColor) {
-            R.string.blue -> Color.Blue
-            R.string.red -> Color.Red
-            else -> Color.White
-        }
-    }
-
 }
