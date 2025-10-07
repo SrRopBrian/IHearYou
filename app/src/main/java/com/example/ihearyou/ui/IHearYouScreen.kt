@@ -33,7 +33,8 @@ fun IHearYouScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(ihuUiState.screenColor)
+            .background(ihuUiState.screenColor),
+        contentAlignment = Alignment.Center
     ) {
         Column(
             verticalArrangement = Arrangement.Center,

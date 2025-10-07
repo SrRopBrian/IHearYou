@@ -10,20 +10,22 @@ import com.example.ihearyou.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class IHearYouViewModel: ViewModel() {
     private val _uiState = MutableStateFlow(IHearYouUiState())
     val uiState: StateFlow<IHearYouUiState> = _uiState.asStateFlow()
 
-    private var screenColor = uiState.value.screenColor
-
-    fun changeScreenColor(): Color {
-        when (screenColor) {
-            Color.White -> screenColor = Color.Blue
-            Color.Blue -> screenColor = Color.Red
-            Color.Red -> screenColor = Color.Blue
+    fun changeScreenColor() {
+        _uiState.update { currentState ->
+            val newColor = when (currentState.screenColor) {
+                Color.White -> Color.Blue
+                Color.Blue -> Color.Red
+                Color.Red -> Color.Blue
+                else -> Color.White
+            }
+            currentState.copy(screenColor = newColor)
         }
 
-        return screenColor
     }
 }
