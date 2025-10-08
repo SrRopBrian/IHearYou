@@ -26,10 +26,13 @@ import android.net.Uri
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.ContextCompat.startActivity
 import com.example.ihearyou.R
@@ -96,13 +99,15 @@ fun IHearYouScreen(
                         }
                     }
 
-                    ihuViewModel.updateScreenColor()}
-            ) {
+                    ihuViewModel.updateScreenColor()},
+                modifier = Modifier.size(80.dp)            ) {
                 Icon(
                     painter = painterResource(R.drawable.black_mic),
                     contentDescription = stringResource(R.string.black_mic)
                 )
             }
+
+            Spacer(modifier = Modifier.size(16.dp))
 
             Text(
                 text = stringResource(R.string.press_start)
