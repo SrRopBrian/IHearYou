@@ -4,5 +4,6 @@ import androidx.compose.ui.graphics.Color
 
 data class IHearYouUiState(
     val screenColor: Color = Color.White,
-    val micColor: Int = 0
+    val showDialog: Boolean = false,
+    val launchAppSettings: Boolean = false
 )
