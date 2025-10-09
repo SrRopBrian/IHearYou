@@ -23,7 +23,11 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import android.provider.Settings
+import android.speech.RecognitionListener
+import android.speech.RecognizerIntent
+import android.speech.SpeechRecognizer
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Spacer
@@ -31,11 +35,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalCursorBlinkEnabled
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.ContextCompat.startActivity
 import com.example.ihearyou.R
+import java.util.Locale
 
 
 @Composable
@@ -46,6 +54,47 @@ fun IHearYouScreen(
     val context = LocalContext.current
     val packageName = context.packageName
     val activity = context as Activity
+
+    val speechRecognizer = remember {
+        SpeechRecognizer.createSpeechRecognizer(context)
+    }
+
+    val recognizerIntent = remember {
+        Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+        }
+    }
+
+    DisposableEffect(Unit) {
+        val listener = object : RecognitionListener {
+            override fun onReadyForSpeech(params: Bundle?) {}
+            override fun onBeginningOfSpeech() {}
+            override fun onRmsChanged(rmsdB: Float) {}
+            override fun onBufferReceived(buffer: ByteArray?) {}
+            override fun onEndOfSpeech() {
+                ihuViewModel.stopListening()
+            }
+            override fun onError(error: Int) {
+                ihuViewModel.stopListening()
+            }
+            override fun onResults(results: Bundle?) {
+                val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
+                if (!matches.isNullOrEmpty()) {
+                    val spokenText = matches[0]
+                    ihuViewModel.handleRecognitionResult(spokenText)
+                }
+            }
+            override fun onPartialResults(partialResults: Bundle?) {}
+            override fun onEvent(eventType: Int, params: Bundle?) {}
+        }
+
+        speechRecognizer.setRecognitionListener(listener)
+
+        onDispose {
+            speechRecognizer.destroy()
+        }
+    }
 
     val permissions = arrayOf(
         Manifest.permission.RECORD_AUDIO
@@ -68,6 +117,7 @@ fun IHearYouScreen(
         }
     )
 
+    // User Interface
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -98,7 +148,8 @@ fun IHearYouScreen(
                             }
                         }
                     }
-
+                    ihuViewModel.startListening()
+                    speechRecognizer.startListening(recognizerIntent)
                     ihuViewModel.updateScreenColor()},
                 modifier = Modifier.size(80.dp)            ) {
                 Icon(
