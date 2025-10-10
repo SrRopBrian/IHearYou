@@ -14,6 +14,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        // ToDo: check if I should push this to IHearYouScreen
         if (!SpeechRecognizer.isRecognitionAvailable(this)) {
             Toast.makeText(
                 this,

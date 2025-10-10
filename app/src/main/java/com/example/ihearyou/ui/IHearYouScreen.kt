@@ -55,14 +55,16 @@ fun IHearYouScreen(
     val packageName = context.packageName
     val activity = context as Activity
 
+    // calling the SpeechRecognizer
     val speechRecognizer = remember {
         SpeechRecognizer.createSpeechRecognizer(context)
     }
 
+    // creating the Intent with extra properties
     val recognizerIntent = remember {
         Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
             putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-            putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+            putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US")
         }
     }
 
@@ -78,6 +80,8 @@ fun IHearYouScreen(
             override fun onError(error: Int) {
                 ihuViewModel.stopListening()
             }
+
+            // get results from the speech recognizer and pass the most confident result to the ViewModel
             override fun onResults(results: Bundle?) {
                 val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 if (!matches.isNullOrEmpty()) {
@@ -149,9 +153,8 @@ fun IHearYouScreen(
                         }
                     }
                     ihuViewModel.startListening()
-                    speechRecognizer.startListening(recognizerIntent)
-                    ihuViewModel.updateScreenColor()},
-                modifier = Modifier.size(80.dp)            ) {
+                    speechRecognizer.startListening(recognizerIntent)},
+                modifier = Modifier.size(80.dp)) {
                 Icon(
                     painter = painterResource(R.drawable.black_mic),
                     contentDescription = stringResource(R.string.black_mic)
