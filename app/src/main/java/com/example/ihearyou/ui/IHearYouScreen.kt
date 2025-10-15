@@ -28,6 +28,7 @@ import android.provider.Settings
 import android.speech.RecognitionListener
 import android.speech.RecognizerIntent
 import android.speech.SpeechRecognizer
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Spacer
@@ -68,6 +69,9 @@ fun IHearYouScreen(
         }
     }
 
+    // Initialize text to speech
+    val ttsHelper = remember { TTSHelper(context) }
+
     DisposableEffect(Unit) {
         val listener = object : RecognitionListener {
             override fun onReadyForSpeech(params: Bundle?) {}
@@ -81,13 +85,30 @@ fun IHearYouScreen(
                 ihuViewModel.stopListening()
             }
 
-            // get results from the speech recognizer and pass the most confident result to the ViewModel
+            // get results from the speech recognizer, pass them to the viewModel and update UI
             override fun onResults(results: Bundle?) {
                 val matches = results?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
-                if (!matches.isNullOrEmpty()) {
-                    val spokenText = matches[0]
-                    ihuViewModel.handleRecognitionResult(spokenText)
+                val spokenText = matches?.firstOrNull()?.lowercase(Locale.getDefault()) ?: ""
+
+                ihuViewModel.updateText(spokenText)
+
+                when {
+                    spokenText.contains("blue") -> {
+                        ttsHelper.speak("Here is the blue screen")
+                    }
+                    spokenText.contains("red") -> {
+                        ttsHelper.speak("Here is the red screen")
+                    }
+                    else -> {
+                        ttsHelper.speak("Sorry, I didn't catch that")
+                    }
                 }
+
+                ihuViewModel.handleRecognitionResult(
+                    onUnrecognized = {
+                        Toast.makeText(context, "Color not recognized", Toast.LENGTH_SHORT).show()
+                    }
+                )
             }
             override fun onPartialResults(partialResults: Bundle?) {}
             override fun onEvent(eventType: Int, params: Bundle?) {}
@@ -156,7 +177,7 @@ fun IHearYouScreen(
                     speechRecognizer.startListening(recognizerIntent)},
                 modifier = Modifier.size(80.dp)) {
                 Icon(
-                    painter = painterResource(R.drawable.black_mic),
+                    painter = if (ihuUiState.isListening) painterResource(R.drawable.greyed_mic) else painterResource(R.drawable.black_mic),
                     contentDescription = stringResource(R.string.black_mic)
                 )
             }
@@ -164,7 +185,9 @@ fun IHearYouScreen(
             Spacer(modifier = Modifier.size(16.dp))
 
             Text(
-                text = stringResource(R.string.press_start)
+                text = if (ihuUiState.isListening) stringResource(R.string.listening) else stringResource(
+                    R.string.press_start
+                )
             )
         }
     }

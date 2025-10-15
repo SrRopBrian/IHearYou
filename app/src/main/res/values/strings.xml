@@ -8,4 +8,5 @@
     <string name="red">Red</string>
     <string name="blue">Blue</string>
     <string name="speech_recognizer_unavailable">The Speech Recognizer is unavailable</string>
+    <string name="listening">Listening…</string>
 </resources>

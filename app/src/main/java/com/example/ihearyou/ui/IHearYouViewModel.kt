@@ -12,14 +12,19 @@ class IHearYouViewModel: ViewModel() {
     private val _uiState = MutableStateFlow(IHearYouUiState())
     val uiState: StateFlow<IHearYouUiState> = _uiState.asStateFlow()
 
+
     // react to the message spoken to the mic
-    fun handleRecognitionResult(result: String) {
-        _uiState.update { it.copy(isListening = false, lastRecognizedText = result) }
-        when (result.lowercase(Locale.getDefault())) {
+    fun updateText(spokenText: String) {
+        _uiState.update { it.copy(isListening = false, lastRecognizedText = spokenText) }
+    }
+
+    fun handleRecognitionResult(onUnrecognized: () -> Unit) {
+        when (uiState.value.lastRecognizedText) {
             "blue" -> { _uiState.update { it.copy(screenColor = Color.Blue) } }
             "red" -> { _uiState.update { it.copy(screenColor = Color.Red) } }
             else -> { // ToDo -  add a Toast that the color wasn't recognized
                 _uiState.update { it.copy(screenColor = Color.White) }
+                onUnrecognized()
             }
         }
     }
