@@ -100,7 +100,7 @@ fun IHearYouScreen(
                         ttsHelper.speak("Here is the red screen")
                     }
                     else -> {
-                        ttsHelper.speak("Sorry, I didn't catch that")
+                        ttsHelper.speak("Sorry, I can't display that color")
                     }
                 }
 
