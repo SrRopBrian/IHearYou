@@ -22,7 +22,8 @@ class IHearYouViewModel: ViewModel() {
         when (uiState.value.lastRecognizedText) {
             "blue" -> { _uiState.update { it.copy(screenColor = Color.Blue) } }
             "red" -> { _uiState.update { it.copy(screenColor = Color.Red) } }
-            else -> { // ToDo -  add a Toast that the color wasn't recognized
+            "" -> { _uiState.update { it.copy(screenColor = Color.White) }}
+            else -> {
                 _uiState.update { it.copy(screenColor = Color.White) }
                 onUnrecognized()
             }

@@ -34,12 +34,15 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalCursorBlinkEnabled
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale
 import androidx.core.content.ContextCompat.startActivity
@@ -92,16 +95,11 @@ fun IHearYouScreen(
 
                 ihuViewModel.updateText(spokenText)
 
-                when {
-                    spokenText.contains("blue") -> {
-                        ttsHelper.speak("Here is the blue screen")
-                    }
-                    spokenText.contains("red") -> {
-                        ttsHelper.speak("Here is the red screen")
-                    }
-                    else -> {
-                        ttsHelper.speak("Sorry, I can't display that color")
-                    }
+                when (spokenText) {
+                    "blue" -> { ttsHelper.speak("Here is the blue screen") }
+                    "red" -> { ttsHelper.speak("Here is the red screen") }
+                    "" -> { ttsHelper.speak("Please say something") }
+                    else -> { ttsHelper.speak("Sorry, I didn't get that.") }
                 }
 
                 ihuViewModel.handleRecognitionResult(
@@ -177,7 +175,8 @@ fun IHearYouScreen(
                     speechRecognizer.startListening(recognizerIntent)},
                 modifier = Modifier.size(80.dp)) {
                 Icon(
-                    painter = if (ihuUiState.isListening) painterResource(R.drawable.greyed_mic) else painterResource(R.drawable.black_mic),
+                    painter = painterResource(R.drawable.black_mic),
+                    tint = if (ihuUiState.isListening) Color.LightGray else Color.Black,
                     contentDescription = stringResource(R.string.black_mic)
                 )
             }
@@ -185,9 +184,9 @@ fun IHearYouScreen(
             Spacer(modifier = Modifier.size(16.dp))
 
             Text(
-                text = if (ihuUiState.isListening) stringResource(R.string.listening) else stringResource(
-                    R.string.press_start
-                )
+                text = if (ihuUiState.isListening) stringResource(R.string.listening) else stringResource(R.string.press_start),
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center
             )
         }
     }

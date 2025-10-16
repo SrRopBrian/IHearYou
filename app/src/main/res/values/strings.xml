@@ -3,10 +3,8 @@
     <string name="black_mic">Black Mic</string>
     <string name="red_mic">Red Mic</string>
     <string name="blue_mic">Blue Mic</string>
-    <string name="press_start">Press the microphone to start recording</string>
+    <string name="press_start">Tap the microphone to give commands. The commands are: blue or red</string>
     <string name="white">White</string>
-    <string name="red">Red</string>
-    <string name="blue">Blue</string>
     <string name="speech_recognizer_unavailable">The Speech Recognizer is unavailable</string>
     <string name="listening">Listening…</string>
 </resources>
